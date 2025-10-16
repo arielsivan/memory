@@ -18,57 +18,61 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        padding: 20px;
+        padding: 15px 10px;
+        overflow-x: hidden;
       }
 
       .container {
-        max-width: 900px;
+        max-width: 500px;
         width: 100%;
       }
 
       .header {
         text-align: center;
-        margin-bottom: 30px;
+        margin-bottom: 20px;
         color: white;
       }
 
       .header h1 {
-        font-size: 2.5em;
-        margin-bottom: 10px;
+        font-size: 1.6em;
+        margin-bottom: 12px;
         text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
       }
 
       .stats {
-        display: flex;
-        justify-content: center;
-        gap: 30px;
-        margin-bottom: 20px;
-        font-size: 1.2em;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        margin-bottom: 15px;
+        font-size: 0.85em;
       }
 
       .stat {
-        background: rgba(255, 255, 255, 0.2);
-        padding: 10px 20px;
-        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.25);
+        padding: 10px 8px;
+        border-radius: 12px;
         backdrop-filter: blur(10px);
+        text-align: center;
+        font-weight: 600;
       }
 
       .game-board {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
-        gap: 10px;
-        margin-bottom: 20px;
+        gap: 8px;
+        margin-bottom: 15px;
       }
 
       .card {
-        aspect-ratio: 1;
+        aspect-ratio: 0.85;
         position: relative;
         cursor: pointer;
-        transition: transform 0.3s ease;
+        transition: transform 0.2s ease;
+        touch-action: manipulation;
       }
 
-      .card:hover {
-        transform: translateY(-5px);
+      .card:active {
+        transform: scale(0.95);
       }
 
       .card-inner {
@@ -92,37 +96,42 @@
         width: 100%;
         height: 100%;
         backface-visibility: hidden;
-        border-radius: 15px;
+        border-radius: 10px;
         display: flex;
+        flex-direction: column;
         justify-content: center;
         align-items: center;
-        font-size: 1.5em;
         font-weight: bold;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        padding: 6px;
       }
 
       .card-front {
         background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
         color: white;
-        font-size: 3em;
+        font-size: 2.2em;
       }
 
       .card-back {
         background: white;
         transform: rotateY(180deg);
-        padding: 10px;
-        text-align: center;
       }
 
       .hebrew {
-        font-size: 1.8em;
+        font-size: 1.1em;
         direction: rtl;
+        font-weight: 700;
+        line-height: 1.2;
+        word-break: break-word;
       }
 
       .english {
-        font-size: 1.2em;
+        font-size: 0.7em;
         color: #666;
-        margin-top: 5px;
+        margin-top: 4px;
+        font-weight: 500;
+        line-height: 1.1;
+        text-align: center;
       }
 
       .controls {
@@ -133,18 +142,18 @@
         background: white;
         color: #667eea;
         border: none;
-        padding: 15px 40px;
-        font-size: 1.1em;
-        font-weight: bold;
-        border-radius: 25px;
+        padding: 14px 32px;
+        font-size: 1em;
+        font-weight: 700;
+        border-radius: 30px;
         cursor: pointer;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        transition: all 0.3s ease;
+        transition: all 0.2s ease;
+        touch-action: manipulation;
       }
 
-      .btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+      .btn:active {
+        transform: scale(0.95);
       }
 
       .victory {
@@ -154,11 +163,13 @@
         left: 50%;
         transform: translate(-50%, -50%);
         background: white;
-        padding: 40px;
+        padding: 30px 25px;
         border-radius: 20px;
         text-align: center;
         box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
         z-index: 1000;
+        max-width: 90%;
+        width: 320px;
       }
 
       .victory.show {
@@ -177,43 +188,119 @@
 
       .victory h2 {
         color: #667eea;
-        font-size: 2.5em;
-        margin-bottom: 20px;
+        font-size: 2em;
+        margin-bottom: 15px;
       }
 
       .victory p {
-        font-size: 1.3em;
+        font-size: 1.1em;
         color: #666;
-        margin-bottom: 30px;
+        margin-bottom: 20px;
       }
 
       @media (max-width: 768px) {
-        .game-board {
-          grid-template-columns: repeat(3, 1fr);
-          gap: 10px;
-        }
-
         .header h1 {
-          font-size: 2em;
-        }
-
-        .card-face {
-          font-size: 1.2em;
-        }
-
-        .hebrew {
-          font-size: 1.4em;
-        }
-      }
-
-      @media (max-width: 480px) {
-        .game-board {
-          grid-template-columns: repeat(2, 1fr);
+          font-size: 1.5em;
         }
 
         .stats {
-          flex-direction: column;
+          font-size: 0.8em;
+          gap: 6px;
+        }
+
+        .stat {
+          padding: 8px 6px;
+        }
+
+        .game-board {
+          gap: 6px;
+        }
+
+        .card-front {
+          font-size: 2em;
+        }
+
+        .hebrew {
+          font-size: 1em;
+        }
+
+        .english {
+          font-size: 0.65em;
+        }
+      }
+
+      @media (max-width: 380px) {
+        body {
+          padding: 10px 8px;
+        }
+
+        .header h1 {
+          font-size: 1.3em;
+          margin-bottom: 10px;
+        }
+
+        .stats {
+          font-size: 0.75em;
+          gap: 5px;
+        }
+
+        .stat {
+          padding: 7px 5px;
+        }
+
+        .game-board {
+          gap: 5px;
+        }
+
+        .card-front {
+          font-size: 1.8em;
+        }
+
+        .hebrew {
+          font-size: 0.9em;
+        }
+
+        .english {
+          font-size: 0.6em;
+        }
+
+        .btn {
+          padding: 12px 28px;
+          font-size: 0.95em;
+        }
+
+        .victory h2 {
+          font-size: 1.7em;
+        }
+
+        .victory p {
+          font-size: 1em;
+        }
+      }
+
+      @media (min-width: 500px) {
+        .container {
+          max-width: 600px;
+        }
+
+        .header h1 {
+          font-size: 1.8em;
+        }
+
+        .stats {
+          font-size: 0.95em;
+        }
+
+        .game-board {
           gap: 10px;
+        }
+
+        .hebrew {
+          font-size: 1.2em;
+        }
+
+        .english {
+          font-size: 0.75em;
         }
       }
     </style>
@@ -225,7 +312,7 @@
         <div class="stats">
           <div class="stat">⏱️ Time: <span id="timer">0:00</span></div>
           <div class="stat">🔄 Moves: <span id="moves">0</span></div>
-          <div class="stat">✨ Matches: <span id="matches">0</span>/21</div>
+          <div class="stat">✨ Matches: <span id="matches">0</span>/10</div>
         </div>
       </div>
 
@@ -245,7 +332,7 @@
     </div>
 
     <script>
-      const words = [
+      const allWords = [
         { hebrew: "לקנות", english: "buy" },
         { hebrew: "משפחה", english: "family" },
         { hebrew: "אחר", english: "other" },
@@ -270,7 +357,7 @@
         { hebrew: "לגדול", english: "grow" },
         { hebrew: "ללבוש", english: "wear" },
       ];
-
+      let words = [];
       let cards = [];
       let flippedCards = [];
       let matchedPairs = 0;
@@ -279,7 +366,16 @@
       let timerInterval = null;
       let canFlip = true;
 
+      function selectRandomWords() {
+        // Shuffle all words
+        const shuffled = [...allWords].sort(() => Math.random() - 0.5);
+        // Take first 10
+        words = shuffled.slice(0, 10);
+      }
+
       function initGame() {
+        selectRandomWords();
+
         const gameBoard = document.getElementById("gameBoard");
         gameBoard.innerHTML = "";
 
@@ -333,7 +429,7 @@
         moves = 0;
         timer = 0;
         document.getElementById("moves").textContent = "0";
-        document.getElementById("matches").textContent = "0/21";
+        document.getElementById("matches").textContent = "0/10";
         document.getElementById("timer").textContent = "0:00";
         document.getElementById("victory").classList.remove("show");
 
@@ -375,12 +471,12 @@
             matchedPairs++;
             document.getElementById(
               "matches"
-            ).textContent = `${matchedPairs}/21`;
+            ).textContent = `${matchedPairs}/10`;
 
             flippedCards = [];
             canFlip = true;
 
-            if (matchedPairs === 21) {
+            if (matchedPairs === 10) {
               endGame();
             }
           }, 500);
