@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hebrew Memory Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+        }
+
+        .stat {
+            background: rgba(255,255,255,0.2);
+            padding: 10px 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            aspect-ratio: 1;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-inner {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+        }
+
+        .card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card.matched .card-inner {
+            opacity: 0.6;
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .card-front {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            font-size: 3em;
+        }
+
+        .card-back {
+            background: white;
+            transform: rotateY(180deg);
+            padding: 10px;
+            text-align: center;
+        }
+
+        .hebrew {
+            font-size: 1.8em;
+            direction: rtl;
+        }
+
+        .english {
+            font-size: 1.2em;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .controls {
+            text-align: center;
+        }
+
+        .btn {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .victory {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            z-index: 1000;
+        }
+
+        .victory.show {
+            display: block;
+            animation: popIn 0.5s ease;
+        }
+
+        @keyframes popIn {
+            0% { transform: translate(-50%, -50%) scale(0); }
+            100% { transform: translate(-50%, -50%) scale(1); }
+        }
+
+        .victory h2 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        .victory p {
+            font-size: 1.3em;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .game-board {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .card-face {
+                font-size: 1.2em;
+            }
+
+            .hebrew {
+                font-size: 1.4em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .game-board {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .stats {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎮 Hebrew Memory Game</h1>
+            <div class="stats">
+                <div class="stat">⏱️ Time: <span id="timer">0:00</span></div>
+                <div class="stat">🔄 Moves: <span id="moves">0</span></div>
+                <div class="stat">✨ Matches: <span id="matches">0</span>/21</div>
+            </div>
+        </div>
+
+        <div class="game-board" id="gameBoard"></div>
+
+        <div class="controls">
+            <button class="btn" onclick="resetGame()">🔄 New Game</button>
+        </div>
+    </div>
+
+    <div class="victory" id="victory">
+        <h2>🎉 מזל טוב!</h2>
+        <p>You completed the game!</p>
+        <p><strong>Time:</strong> <span id="finalTime"></span></p>
+        <p><strong>Moves:</strong> <span id="finalMoves"></span></p>
+        <button class="btn" onclick="resetGame()">Play Again</button>
+    </div>
+
+    <script>
+        const words = [
+            { hebrew: 'לקנות', english: 'buy' },
+            { hebrew: 'משפחה', english: 'family' },
+            { hebrew: 'אחר', english: 'other' },
+            { hebrew: 'שונה', english: 'different' },
+            { hebrew: 'לעבוד', english: 'work' },
+            { hebrew: 'כסף', english: 'money' },
+            { hebrew: 'לדעת', english: 'know' },
+            { hebrew: 'אוכל', english: 'food' },
+            { hebrew: 'להשתמש', english: 'use' },
+            { hebrew: 'עכשיו', english: 'now' },
+            { hebrew: 'להכין', english: 'make' },
+            { hebrew: 'בגדים', english: 'clothes' },
+            { hebrew: 'צבע/לצבוע', english: 'color' },
+            { hebrew: 'הכול', english: 'everything' },
+            { hebrew: 'לגלות', english: 'find out' },
+            { hebrew: 'קשה', english: 'hard' },
+            { hebrew: 'לבחור', english: 'pick' },
+            { hebrew: 'תמונה', english: 'picture' },
+            { hebrew: 'בעיה', english: 'problem' },
+            { hebrew: 'מוכן', english: 'ready' },
+            { hebrew: 'שנים', english: 'years' },
+            { hebrew: 'לגדול', english: 'grow' },
+            { hebrew: 'ללבוש', english: 'wear' }
+        ];
+
+        let cards = [];
+        let flippedCards = [];
+        let matchedPairs = 0;
+        let moves = 0;
+        let timer = 0;
+        let timerInterval = null;
+        let canFlip = true;
+
+        function initGame() {
+            const gameBoard = document.getElementById('gameBoard');
+            gameBoard.innerHTML = '';
+            
+            // Create pairs
+            cards = [];
+            words.forEach((word, index) => {
+                cards.push({ id: index * 2, type: 'hebrew', content: word.hebrew, pair: index });
+                cards.push({ id: index * 2 + 1, type: 'english', content: word.english, pair: index });
+            });
+
+            // Shuffle
+            cards.sort(() => Math.random() - 0.5);
+
+            // Create card elements
+            cards.forEach(card => {
+                const cardEl = document.createElement('div');
+                cardEl.className = 'card';
+                cardEl.dataset.id = card.id;
+                cardEl.dataset.pair = card.pair;
+                
+                cardEl.innerHTML = `
+                    <div class="card-inner">
+                        <div class="card-face card-front">?</div>
+                        <div class="card-face card-back">
+                            <div class="${card.type === 'hebrew' ? 'hebrew' : 'english'}">
+                                ${card.content}
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                cardEl.addEventListener('click', () => flipCard(cardEl));
+                gameBoard.appendChild(cardEl);
+            });
+
+            // Reset stats
+            flippedCards = [];
+            matchedPairs = 0;
+            moves = 0;
+            timer = 0;
+            document.getElementById('moves').textContent = '0';
+            document.getElementById('matches').textContent = '0/21';
+            document.getElementById('timer').textContent = '0:00';
+            document.getElementById('victory').classList.remove('show');
+
+            // Start timer
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        function flipCard(cardEl) {
+            if (!canFlip || cardEl.classList.contains('flipped') || cardEl.classList.contains('matched')) {
+                return;
+            }
+
+            cardEl.classList.add('flipped');
+            flippedCards.push(cardEl);
+
+            if (flippedCards.length === 2) {
+                canFlip = false;
+                moves++;
+                document.getElementById('moves').textContent = moves;
+                checkMatch();
+            }
+        }
+
+        function checkMatch() {
+            const [card1, card2] = flippedCards;
+            const pair1 = card1.dataset.pair;
+            const pair2 = card2.dataset.pair;
+
+            if (pair1 === pair2) {
+                // Match!
+                setTimeout(() => {
+                    card1.classList.add('matched');
+                    card2.classList.add('matched');
+                    matchedPairs++;
+                    document.getElementById('matches').textContent = `${matchedPairs}/21`;
+                    
+                    flippedCards = [];
+                    canFlip = true;
+
+                    if (matchedPairs === 21) {
+                        endGame();
+                    }
+                }, 500);
+            } else {
+                // No match
+                setTimeout(() => {
+                    card1.classList.remove('flipped');
+                    card2.classList.remove('flipped');
+                    flippedCards = [];
+                    canFlip = true;
+                }, 1000);
+            }
+        }
+
+        function updateTimer() {
+            timer++;
+            const minutes = Math.floor(timer / 60);
+            const seconds = timer % 60;
+            document.getElementById('timer').textContent = 
+                `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function endGame() {
+            clearInterval(timerInterval);
+            document.getElementById('finalTime').textContent = document.getElementById('timer').textContent;
+            document.getElementById('finalMoves').textContent = moves;
+            setTimeout(() => {
+                document.getElementById('victory').classList.add('show');
+            }, 500);
+        }
+
+        function resetGame() {
+            if (timerInterval) clearInterval(timerInterval);
+            canFlip = true;
+            initGame();
+        }
+
+        // Start game on load
+        initGame();
+    </script>
+</body>
+</html>
